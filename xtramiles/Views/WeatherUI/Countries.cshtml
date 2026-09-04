@@ -1,0 +1,52 @@
+<form id="countryForm">
+    <select name="country" id="country"></select>
+    <button type="submit">Select</button>
+</form>
+
+<form id="cityForm">
+    <select name="city" id="city"></select>
+    <button type="submit">Select</button>
+</form>
+
+<script>
+    fetch("/api/countries")
+        .then(response => response.json())
+        .then(countries => {
+            const select = document.getElementById("country");
+            for (const country of countries) {
+                const option = document.createElement("option");
+                option.value = country.item1;
+                option.textContent = country.item2;
+                select.appendChild(option);
+            }
+        });
+
+    document.getElementById("countryForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const code = document.getElementById("country").value;
+
+        fetch(`/api/cities/${code}`)
+            .then(response => response.json())
+            .then(cities => {
+                const select = document.getElementById("city");
+                select.innerHTML = "";
+                for (const city of cities) {
+                    const option = document.createElement("option");
+                    option.value = city.name;
+                    option.textContent = city.name;
+                    select.appendChild(option);
+                }
+            });
+    });
+
+    document.getElementById("cityForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const city = document.getElementById("city").value;
+
+        fetch(`/api/weather/${city}`)
+            .then(response => response.json())
+            .then(weather => {
+                alert(JSON.stringify(weather));
+            });
+    });
+</script>

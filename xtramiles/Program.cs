@@ -1,7 +1,10 @@
+using Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddSingleton<OpenWeather>();
 
 var app = builder.Build();
 
@@ -19,7 +22,9 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
-
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=weather}/{action=Index}");
 app.MapRazorPages();
 
 app.Run();
