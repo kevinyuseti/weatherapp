@@ -10,4 +10,8 @@
     <PackageReference Include="CountriesInfo" Version="1.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="xtramiles.Tests" />
+  </ItemGroup>
+
 </Project>

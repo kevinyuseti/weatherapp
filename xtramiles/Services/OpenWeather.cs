@@ -1,9 +1,23 @@
+using System.Net.Http;
+using Models;
+using Newtonsoft.Json;
+
 namespace Services;
 
 public class OpenWeather : IWeather
 {
-    public string GetWeather(string lat, string lon)
+    private readonly HttpClient _client;
+    private string _apiKey;
+    public OpenWeather(HttpClient client, IConfiguration config)
     {
-        return "foo";
+        _client = client;
+        _apiKey = config["ApiKey:OpenWeather"].ToString();
+    }
+    public WeatherResponse GetWeather(string lat, string lon)
+    {
+        var response = _client.GetAsync($"https://api.openweathermap.org/data/4.0/onecall/current?lat={lat}&lon={lon}&units=imperial&lang=en&appid={_apiKey}").Result;
+        var resp = response.Content.ReadAsStringAsync().Result;
+        WeatherResponse data = JsonConvert.DeserializeObject<Models.WeatherResponse>(resp);
+        return data;
     }
 }

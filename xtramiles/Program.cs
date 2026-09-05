@@ -4,7 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddSingleton<OpenWeather>();
+builder.Services.AddHttpClient<OpenWeather>();
 
 var app = builder.Build();
 

@@ -56,6 +56,13 @@ public class WeatherAPIController : Controller
     {
         var (lat, lot) = RegionInfo.GetCityLocation(cityName);
         var res = weatherService.GetWeather(lat, lot);
+        res.Data.FirstOrDefault().Temp = fahrenheitToCelcius(res.Data.FirstOrDefault().Temp);
+        res.Data.FirstOrDefault().FeelsLike = fahrenheitToCelcius(res.Data.FirstOrDefault().FeelsLike);
         return new JsonResult(res);
+    }
+
+    internal static double fahrenheitToCelcius(double input)
+    {
+        return (input-32)/9*5;
     }
 }
