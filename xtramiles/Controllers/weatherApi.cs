@@ -38,7 +38,7 @@ public class WeatherAPIController : Controller
             Lon = c.Longitude,
             Lat = c.Latitude
 
-        }).ToList();
+        }).OrderBy(c=>c.Name).ToList();
         Task.Run(() =>
         {
             if (RegionInfo.IsCountryFetched(code))
@@ -56,6 +56,10 @@ public class WeatherAPIController : Controller
     {
         var (lat, lot) = RegionInfo.GetCityLocation(cityName);
         var res = weatherService.GetWeather(lat, lot);
+        if (!res.Data.Any())
+        {
+            return new JsonResult("api call error");
+        }
         res.Data.FirstOrDefault().Temp = fahrenheitToCelcius(res.Data.FirstOrDefault().Temp);
         res.Data.FirstOrDefault().FeelsLike = fahrenheitToCelcius(res.Data.FirstOrDefault().FeelsLike);
         return new JsonResult(res);

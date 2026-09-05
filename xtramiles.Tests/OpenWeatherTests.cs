@@ -9,15 +9,17 @@ namespace xtramiles.Tests;
 public class MockHttpMessageHandler : HttpMessageHandler
 {
     private readonly string _responseJson;
+    private readonly HttpStatusCode _statusCode;
 
-    public MockHttpMessageHandler(string responseJson)
+    public MockHttpMessageHandler(string responseJson, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
         _responseJson = responseJson;
+        _statusCode = statusCode;
     }
 
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        var response = new HttpResponseMessage(_statusCode)
         {
             Content = new StringContent(_responseJson)
         };
@@ -107,5 +109,26 @@ public class OpenWeatherTests
         var condition = Assert.Single(data.Weather);
         Assert.Equal("Clouds", condition.Main);
         Assert.Equal("overcast clouds", condition.Description);
+    }
+
+    private const string ErrorJson = @"{
+        ""cod"": 401,
+        ""message"": ""Invalid API key. Please see https://openweathermap.org/faq#error401 for more info.""
+    }";
+
+    [Fact]
+    public void GetWeather_WhenApiReturnsError_ReturnsResponseWithNullData()
+    {
+        var handler = new MockHttpMessageHandler(ErrorJson, HttpStatusCode.Unauthorized);
+        var client = new HttpClient(handler);
+        var config = new MockConfiguration(new Dictionary<string, string?>
+        {
+            ["ApiKey:OpenWeather"] = "test-key"
+        });
+        var weather = new OpenWeather(client, config);
+
+        var result = weather.GetWeather("52.2297", "21.0122");
+
+        Assert.Null(result.Data);
     }
 }

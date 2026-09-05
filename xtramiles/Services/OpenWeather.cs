@@ -16,6 +16,10 @@ public class OpenWeather : IWeather
     public WeatherResponse GetWeather(string lat, string lon)
     {
         var response = _client.GetAsync($"https://api.openweathermap.org/data/4.0/onecall/current?lat={lat}&lon={lon}&units=imperial&lang=en&appid={_apiKey}").Result;
+        if (!response.IsSuccessStatusCode)
+        {
+            return new WeatherResponse();
+        }
         var resp = response.Content.ReadAsStringAsync().Result;
         WeatherResponse data = JsonConvert.DeserializeObject<Models.WeatherResponse>(resp);
         return data;

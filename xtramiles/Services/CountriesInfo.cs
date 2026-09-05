@@ -20,7 +20,7 @@ public static class RegionInfo
         foreach (var v in input)
         {
             //lazy load, assume user always hit country first. if not, break on get weather
-            _allCityInfo.Add(v.Name, new Models.City
+            _allCityInfo.TryAdd(v.Name, new Models.City
             {
                 Name = v.Name,
                 Lon = v.Lon,
